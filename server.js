@@ -9,7 +9,6 @@ const N8N_URL = process.env.N8N_URL || 'http://localhost:5678';
 app.use(express.json());
 
 // Proxy /api/* → n8n webhooks
-// e.g. GET /api/tickets-pending → n8n webhook /webhook/tickets-pending
 app.use('/api', createProxyMiddleware({
   target: N8N_URL,
   changeOrigin: true,
@@ -22,7 +21,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
+// Bind to 0.0.0.0 so Railway healthcheck can reach it
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`SupportOps running on port ${PORT}`);
   console.log(`Proxying /api/* → ${N8N_URL}/webhook/*`);
 });

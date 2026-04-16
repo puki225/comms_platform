@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gritty Blenders — Support Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* ── Core 3-color system ── */
+  --teal:       #3d5a5c;   /* primary */
+  --teal-deep:  #2a3f41;   /* darkest teal — topbar, headers */
+  --teal-mid:   #4d6e70;
+  --teal-pale:  #7a9e9f;
+  --teal-dim:   rgba(61,90,92,0.08);
+  --teal-dim2:  rgba(61,90,92,0.15);
+  --teal-glow:  rgba(61,90,92,0.3);
+
+  --tan:        #a67c52;   /* secondary / details */
+  --tan-pale:   #c4a47e;
+  --tan-dim:    rgba(166,124,82,0.1);
+  --tan-dim2:   rgba(166,124,82,0.18);
+
+  --white:      #ffffff;   /* background */
+  --off-white:  #f8f8f6;
+  --surface:    #f2f2f0;   /* subtle surface lift */
+
+  --ink:        #1c1c1c;
+  --muted:      #6b6b6b;
+  --muted2:     #9e9e9e;
+
+  --border:     rgba(0,0,0,0.07);
+  --border-mid: rgba(0,0,0,0.12);
+
+  --green:      #2d7a4f;
+  --green-dim:  rgba(45,122,79,0.1);
+  --red:        #c0392b;
+  --red-dim:    rgba(192,57,43,0.08);
+  --green:      #2d7a4f;
+  --green-dim:  rgba(45,122,79,0.1);
+  --amber:      #a07020;
+  --amber-dim:  rgba(160,112,32,0.1);
+
+  --radius:     10px;
+  --radius-sm:  7px;
+  --shadow:     0 1px 8px rgba(0,0,0,0.08);
+  --shadow-md:  0 4px 24px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--white);
+  color: var(--ink);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 252px 1fr;
+  grid-template-rows: 56px 1fr;
+  font-size: 15px;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--teal-deep);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+.logo { display: flex; align-items: center; gap: 11px; }
+.logo-ring {
+  width: 34px; height: 34px;
+  border: 1.5px solid var(--tan-pale);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px; letter-spacing: 0.05em;
+  color: var(--tan-pale);
+  flex-shrink: 0;
+}
+.logo-text { display: flex; flex-direction: column; line-height: 1; gap: 2px; }
+.logo-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.12em; color: #fff; }
+.logo-sub  { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--teal-pale); text-transform: uppercase; }
+
+.topbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,0.1); margin: 0 4px; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+.live-pill {
+  display: flex; align-items: center; gap: 7px;
+  border: 1px solid rgba(45,122,79,0.4);
+  background: rgba(45,122,79,0.15);
+  border-radius: 20px; padding: 4px 12px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: #7ecb9e;
+}
+.live-dot { width: 6px; height: 6px; background: #7ecb9e; border-radius: 50%; box-shadow: 0 0 5px #7ecb9e; animation: pulse 2.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+.chip {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.03em;
+}
+.chip.hot { background: var(--tan-dim2); color: var(--tan-pale); border-color: rgba(166,124,82,0.35); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--teal-deep);
+  border-right: 1px solid rgba(0,0,0,0.15);
+  padding: 16px 0 0;
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-eyebrow {
+  margin: 0 14px 14px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 10px; letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.25);
+  text-align: center;
+}
+.s-section {
+  padding: 10px 16px 4px;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-top: 4px;
+}
+.s-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 16px; cursor: pointer;
+  font-family: 'Crimson Pro', serif; font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  transition: all 0.13s; position: relative;
+}
+.s-item svg { opacity: 0.55; flex-shrink: 0; }
+.s-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.8); }
+.s-item:hover svg { opacity: 0.8; }
+.s-item.active { color: #fff; background: rgba(255,255,255,0.07); }
+.s-item.active svg { opacity: 1; color: var(--tan-pale); }
+.s-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 5px; bottom: 5px;
+  width: 2px; background: var(--tan); border-radius: 0 2px 2px 0;
+}
+.s-count {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px; padding: 1px 6px;
+  color: rgba(255,255,255,0.3);
+}
+.s-count.hot { background: var(--tan-dim2); color: var(--tan-pale); border-color: rgba(166,124,82,0.3); }
+
+/* Webhook quick-ref */
+.s-webhooks {
+  margin-top: auto;
+  padding: 14px 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.s-webhooks-title {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: rgba(255,255,255,0.2); margin-bottom: 7px;
+}
+.wh-pill {
+  display: block;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--teal-pale);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 5px; padding: 5px 9px;
+  margin-bottom: 4px; cursor: pointer;
+  transition: background 0.13s; line-height: 1.3;
+  word-break: break-all;
+}
+.wh-pill:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.wh-hint { font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,0.18); margin-top: 2px; }
+
+/* ── MAIN ── */
+.main {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  overflow: hidden;
+  height: calc(100vh - 56px);
+}
+
+/* ── TICKET LIST ── */
+.ticket-list {
+  background: var(--off-white);
+  border-right: 1px solid var(--border-mid);
+  overflow-y: auto;
+}
+.tl-header {
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: baseline; justify-content: space-between;
+  position: sticky; top: 0; background: var(--off-white); z-index: 10;
+}
+.tl-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+  letter-spacing: 0.1em; color: var(--teal-deep);
+}
+.tl-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted2); }
+
+.filter-row {
+  display: flex; gap: 5px; padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 50px; background: var(--off-white); z-index: 9;
+}
+.fc {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px;
+  border: 1px solid var(--border-mid);
+  background: transparent; color: var(--muted);
+  cursor: pointer; transition: all 0.13s;
+}
+.fc:hover { border-color: var(--teal); color: var(--teal); }
+.fc.active { background: var(--teal-deep); color: #fff; border-color: var(--teal-deep); }
+
+.t-item {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: background 0.13s; position: relative;
+}
+.t-item:hover { background: var(--teal-dim); }
+.t-item.active { background: var(--teal-dim2); }
+.t-item.active::after {
+  content: ''; position: absolute;
+  right: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--teal); border-radius: 2px 0 0 2px;
+}
+.t-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.t-name { font-family: 'Crimson Pro', serif; font-weight: 600; font-size: 15px; color: var(--ink); }
+.t-time { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted2); }
+.t-subj { font-size: 13px; color: var(--muted); margin-bottom: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; }
+.t-tags { display: flex; gap: 4px; align-items: center; }
+.tag {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px;
+  border: 1px solid var(--border-mid); color: var(--muted);
+}
+.tag.refund { background: var(--amber-dim); color: var(--amber); border-color: rgba(160,112,32,0.22); }
+.tag.return { background: var(--teal-dim2); color: var(--teal); border-color: rgba(61,90,92,0.22); }
+.tag.chat   { background: var(--tan-dim); color: var(--tan); border-color: rgba(166,124,82,0.22); }
+.tag.urgent { background: var(--red-dim); color: var(--red); border-color: rgba(192,57,43,0.22); }
+.t-id { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2); }
+
+/* ── DETAIL ── */
+.detail { background: var(--white); overflow-y: auto; display: flex; flex-direction: column; }
+
+.d-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  background: var(--white);
+}
+.d-customer { display: flex; flex-direction: column; gap: 5px; }
+.d-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.08em; color: var(--teal-deep); line-height: 1; }
+.d-meta { display: flex; gap: 12px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); align-items: center; }
+.ch-badge {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px;
+  background: var(--tan-dim); color: var(--tan); border: 1px solid rgba(166,124,82,0.22);
+}
+.ch-badge.chat { background: var(--teal-dim2); color: var(--teal); border-color: rgba(61,90,92,0.22); }
+
+.order-card {
+  background: var(--teal-deep); border-radius: var(--radius);
+  padding: 11px 16px; display: flex; flex-direction: column; gap: 3px;
+  min-width: 148px; box-shadow: var(--shadow-md);
+}
+.oc-id { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 0.1em; color: #fff; line-height: 1; }
+.oc-amount { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--tan-pale); }
+.oc-status { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--teal-pale); letter-spacing: 0.06em; text-transform: uppercase; }
+
+.d-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+
+.s-label {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--muted2); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.s-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.msg-bubble {
+  background: var(--off-white);
+  border: 1px solid var(--border-mid);
+  border-left: 3px solid var(--tan);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 13px 16px;
+  font-family: 'Crimson Pro', serif; font-size: 15px;
+  line-height: 1.7; color: var(--ink);
+  position: relative;
+}
+.msg-channel { position: absolute; top: 9px; right: 13px; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.order-ctx {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 11px 20px;
+}
+.ctx-item { display: flex; flex-direction: column; gap: 2px; }
+.ctx-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted2); letter-spacing: 0.1em; text-transform: uppercase; }
+.ctx-val { font-family: 'Crimson Pro', serif; font-size: 15px; color: var(--ink); font-weight: 600; }
+.ctx-val.tan   { color: var(--tan); }
+.ctx-val.teal  { color: var(--teal); }
+.ctx-val.amber { color: var(--amber); }
+
+/* AI block */
+.ai-block {
+  background: var(--white);
+  border: 1px solid rgba(61,90,92,0.18);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.ai-head {
+  background: var(--teal-deep);
+  padding: 9px 14px;
+  display: flex; align-items: center; gap: 9px;
+}
+.ai-orb {
+  width: 19px; height: 19px;
+  border: 1.5px solid var(--tan-pale);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 9px;
+  color: var(--tan-pale);
+}
+.ai-lbl { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--teal-pale); text-transform: uppercase; }
+.ai-conf { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--teal-pale); }
+.ai-conf span { color: #fff; }
+
+.ai-text-area { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+.ai-textarea {
+  width: 100%; background: transparent; border: none; outline: none;
+  font-family: 'Crimson Pro', serif; font-size: 15px; line-height: 1.7;
+  color: var(--ink); resize: none; min-height: 96px; caret-color: var(--teal);
+}
+.ai-textarea[readonly] { cursor: default; }
+
+.ai-action {
+  padding: 9px 16px; display: flex; align-items: center; gap: 9px;
+  background: var(--teal-dim);
+}
+.ai-action-lbl { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.08em; }
+.a-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--tan-dim); border: 1px solid rgba(166,124,82,0.25);
+  border-radius: 5px; padding: 4px 11px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--tan);
+}
+.a-dot { width: 5px; height: 5px; background: var(--tan); border-radius: 50%; }
+
+/* Webhook inspector */
+.wh-block {
+  background: var(--teal-deep);
+  border: 1px solid rgba(61,90,92,0.2);
+  border-radius: var(--radius); overflow: hidden;
+}
+.wh-head {
+  padding: 8px 14px; display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
+}
+.wh-head-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: var(--teal-pale); text-transform: uppercase; }
+.wh-copy {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px; padding: 3px 8px; color: var(--teal-pale); cursor: pointer;
+  transition: background 0.13s;
+}
+.wh-copy:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.wh-code {
+  padding: 12px 16px;
+  font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.8;
+  color: rgba(255,255,255,0.55); white-space: pre; overflow-x: auto;
+}
+.wh-k { color: var(--teal-pale); }
+.wh-s { color: #a8d4a8; }
+.wh-n { color: var(--tan-pale); }
+
+/* Decision bar */
+.d-bar {
+  padding: 14px 24px;
+  border-top: 1px solid var(--border-mid);
+  display: flex; align-items: center; gap: 9px;
+  background: var(--white); position: sticky; bottom: 0;
+}
+.btn {
+  border: none; border-radius: var(--radius-sm);
+  padding: 9px 18px; cursor: pointer;
+  display: flex; align-items: center; gap: 7px;
+  transition: all 0.13s;
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 0.1em;
+}
+.btn-ok { background: var(--teal-deep); color: #fff; border: 1px solid var(--teal); }
+.btn-ok:hover { background: var(--teal-mid); transform: translateY(-1px); box-shadow: 0 4px 14px var(--teal-glow); }
+.btn-ed { background: transparent; color: var(--tan); border: 1px solid rgba(166,124,82,0.35); }
+.btn-ed:hover { background: var(--tan-dim2); }
+.btn-no { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,0.25); }
+.btn-no:hover { background: var(--red-dim); }
+.btn-sk {
+  margin-left: auto; background: transparent;
+  color: var(--muted2); border: 1px solid var(--border-mid);
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em; padding: 8px 14px;
+}
+.btn-sk:hover { color: var(--ink); border-color: var(--border-mid); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--teal-deep);
+  border: 1px solid rgba(166,124,82,0.3);
+  border-radius: var(--radius); padding: 11px 16px;
+  display: flex; align-items: center; gap: 9px;
+  font-family: 'Crimson Pro', serif; font-size: 14px; color: rgba(255,255,255,0.8);
+  box-shadow: var(--shadow-md);
+  transform: translateY(60px); opacity: 0;
+  transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1); z-index: 100;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.t-dot.green  { background: #7ecb9e; box-shadow: 0 0 5px #7ecb9e; }
+.t-dot.tan    { background: var(--tan-pale); }
+.t-dot.red    { background: var(--red); }
+
+/* Empty */
+.empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+}
+.empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.1em; color: var(--teal-deep); }
+.empty-sub { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted2); letter-spacing: 0.06em; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 2px; }
+
+@keyframes up { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.d-body > * { animation: up 0.2s ease forwards; opacity: 0; }
+.d-body > *:nth-child(1) { animation-delay:.02s }
+.d-body > *:nth-child(2) { animation-delay:.07s }
+.d-body > *:nth-child(3) { animation-delay:.12s }
+.d-body > *:nth-child(4) { animation-delay:.17s }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">
+    <img src="data:image/png;base64,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" alt="Gritty Blenders" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1.5px solid var(--tan-pale);flex-shrink:0;">
+    <div class="logo-text">
+      <span class="logo-name">Gritty Blenders</span>
+      <span class="logo-sub">Support Operations</span>
+    </div>
+  </div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-right">
+    <div class="live-pill"><div class="live-dot"></div>n8n conectado</div>
+    <span class="chip hot" id="top-badge">3 pendientes</span>
+
+  </div>
+</header>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-eyebrow">BY ORDER OF THE GRITTY BLENDERS</div>
+
+  <div class="s-section">Bandeja</div>
+  <div class="s-item active" id="nav-pending" onclick="switchView('pending')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Pendientes <span class="s-count hot" id="side-badge">3</span>
+  </div>
+  <div class="s-item" id="nav-chat" onclick="switchView('chat')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Chatbot escalados <span class="s-count" id="badge-chat">1</span>
+  </div>
+  <div class="s-item" id="nav-resolved" onclick="switchView('resolved')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    Resueltos hoy <span class="s-count" id="badge-resolved">7</span>
+  </div>
+  <div class="s-section">Historial</div>
+  <div class="s-item" id="nav-rejected" onclick="switchView('rejected')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Rechazados <span class="s-count" id="badge-rejected">2</span>
+  </div>
+  <div class="s-item" id="nav-all" onclick="switchView('all')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+    Todos los tickets
+  </div>
+  <div class="s-section">n8n</div>
+  <div class="s-item">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Workflows
+  </div>
+  <div class="s-item">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    Tables / DB
+  </div>
+  <div class="s-item">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    System prompt IA
+  </div>
+
+  <div class="s-webhooks">
+    <div class="s-webhooks-title">Webhooks activos</div>
+    <div class="wh-pill" onclick="copyWh(this,'http://localhost:5678/webhook/tickets-pending')">GET /webhook/tickets-pending</div>
+    <div class="wh-pill" onclick="copyWh(this,'http://localhost:5678/webhook/decision')">POST /webhook/decision</div>
+    <div class="wh-pill" onclick="copyWh(this,'http://localhost:5678/webhook/chatbot-escalate')">POST /webhook/chatbot-escalate</div>
+    <div class="wh-hint">↑ clic para copiar</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="ticket-list">
+    <div class="tl-header">
+      <span class="tl-title">Revisión pendiente</span>
+      <span class="tl-count" id="list-count">3 tickets</span>
+    </div>
+    <div class="filter-row">
+      <button class="fc active" onclick="filterT('all',this)">Todos</button>
+      <button class="fc" onclick="filterT('refund',this)">Refund</button>
+      <button class="fc" onclick="filterT('return',this)">Return</button>
+      <button class="fc" onclick="filterT('chat',this)">Chatbot</button>
+    </div>
+    <div id="tlist"></div>
+  </div>
+
+  <div class="detail" id="detail">
+    <div class="empty">
+      <div class="empty-title">Support Ops</div>
+      <div class="empty-sub">Selecciona un ticket para revisar</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="t-dot green" id="tdot"></div>
+  <span id="tmsg">Hecho</span>
+</div>
+
+<script>
+const DEMO_MODE = true;
+
+// ── DATA STORE ────────────────────────────────────────────────
+// status: 'pending' | 'resolved' | 'rejected'
+// resolvedAction: what operator did — 'approved'|'edited'|'rejected'
+const store = [
+  { id:'T-0041', name:'Laura Martínez', email:'laura.m@gmail.com', subject:'Solicitud de reembolso — pedido llegó roto', time:'8 min', channel:'email', tags:['refund','email'], order:'#5821', orderDate:'12 abr 2025', orderAmount:'€89.00', orderStatus:'Entregado', orderItems:'Lámpara de escritorio x1', message:'Buenos días, os escribo porque recibí mi pedido el martes y la lámpara llegó con la pantalla rota. Es un regalo y lo necesito urgentemente. ¿Podéis hacerme el reembolso completo o enviarme una nueva? Adjunto fotos del embalaje y el producto dañado. Gracias.', aiResponse:'Hola Laura,\n\nSentimos mucho que el pedido llegara en esas condiciones. Hemos procesado el reembolso completo de €89.00, que recibirás en un plazo de 3–5 días hábiles.\n\nNo es necesario que devuelvas el artículo dañado.\n\nDisculpa las molestias.', aiAction:'Refund completo €89.00 — order #5821', aiConfidence:94, status:'pending', resolvedAt:null, resolvedAction:null, finalResponse:null },
+  { id:'T-0040', name:'Carlos Rueda', email:'carlos.rueda@outlook.com', subject:'Quiero devolver unas zapatillas — talla incorrecta', time:'34 min', channel:'email', tags:['return','email'], order:'#5809', orderDate:'9 abr 2025', orderAmount:'€134.00', orderStatus:'Entregado', orderItems:'Zapatillas Trail Run 42 x1', message:'Hola, pedí las zapatillas en talla 42 pero me quedan pequeñas, necesito la 43. ¿Puedo hacer un cambio de talla o procedo con devolución y nuevo pedido? El plazo de 30 días aún no ha vencido.', aiResponse:'Hola Carlos,\n\nClaro que sí. Te enviamos una etiqueta de devolución prepagada por email. Una vez recibamos el artículo, procesamos el reembolso de €134.00 o te enviamos la talla 43 si hay stock.\n\n¿Qué prefieres?', aiAction:'Generar etiqueta devolución — order #5809', aiConfidence:88, status:'pending', resolvedAt:null, resolvedAction:null, finalResponse:null },
+  { id:'T-0039', name:'Ana Soto', email:'anasoto22@gmail.com', subject:'Escalado chatbot — pedido no recibido', time:'1h 12min', channel:'chat', tags:['urgent','chat'], order:'#5798', orderDate:'5 abr 2025', orderAmount:'€211.50', orderStatus:'En tránsito', orderItems:'Set cocina premium x1', message:'El bot no me da información del pedido. Lleva 11 días y no ha llegado. El tracking dice "en tránsito" desde hace una semana. Necesito saber si está perdido. Es un regalo de cumpleaños para mañana.', aiResponse:'Hola Ana,\n\nDisculpa los inconvenientes. Hemos contactado al transportista y están investigando la ubicación del paquete. Te confirmamos en las próximas 24 horas.\n\nSi no se resuelve en 48h te enviamos un reenvío urgente sin coste.', aiAction:'Abrir incidencia transportista — order #5798', aiConfidence:71, status:'pending', resolvedAt:null, resolvedAction:null, finalResponse:null },
+  // Pre-seeded resolved/rejected for demo
+  { id:'T-0038', name:'Marta Iglesias', email:'marta.ig@gmail.com', subject:'Reembolso tramitado — confirmación recibida', time:'2h 40min', channel:'email', tags:['refund','email'], order:'#5791', orderDate:'8 abr 2025', orderAmount:'€56.00', orderStatus:'Entregado', orderItems:'Dosificador café x1', message:'Hola, quería confirmar que recibí el reembolso de €56.00 en mi cuenta. Muchas gracias por la rapidez.', aiResponse:'Hola Marta,\n\nNos alegramos de que todo haya llegado correctamente. Queda reflejado en nuestro sistema. ¡Hasta pronto!', aiAction:'Nota interna — order #5791', aiConfidence:97, status:'resolved', resolvedAt:'hoy 10:24', resolvedAction:'approved', finalResponse:'Hola Marta,\n\nNos alegramos de que todo haya llegado correctamente. Queda reflejado en nuestro sistema. ¡Hasta pronto!' },
+  { id:'T-0037', name:'Diego Peralta', email:'d.peralta@hotmail.com', subject:'Devolución tramitada — etiqueta enviada', time:'3h 15min', channel:'email', tags:['return','email'], order:'#5785', orderDate:'7 abr 2025', orderAmount:'€98.50', orderStatus:'Devuelto', orderItems:'Molinillo manual x1', message:'Recibí la etiqueta de devolución, la he usado y el paquete ya está en camino. Gracias.', aiResponse:'Hola Diego,\n\nPerfecto, en cuanto llegue el artículo procesamos el reembolso de €98.50 en 3–5 días hábiles. ¡Gracias por tu confianza!', aiAction:'Confirmar recepción — order #5785', aiConfidence:91, status:'resolved', resolvedAt:'hoy 09:47', resolvedAction:'edited', finalResponse:'Hola Diego,\n\nPerfecto, en cuanto llegue el artículo procesamos el reembolso. ¡Gracias!' },
+  { id:'T-0036', name:'Sofía Leal', email:'sofia.leal@icloud.com', subject:'Consulta sobre garantía del producto', time:'4h 02min', channel:'chat', tags:['chat'], order:'#5779', orderDate:'6 abr 2025', orderAmount:'€142.00', orderStatus:'Entregado', orderItems:'Cafetera de émbolo premium x1', message:'Hola, ¿cuánto tiempo de garantía tiene la cafetera? No encuentro la información en el paquete.', aiResponse:'Hola Sofía,\n\nTodos nuestros productos tienen 2 años de garantía legal. Si tienes algún problema, escríbenos y lo gestionamos.', aiAction:'Sin acción Shopify — informativo', aiConfidence:88, status:'resolved', resolvedAt:'hoy 08:55', resolvedAction:'approved', finalResponse:'Hola Sofía,\n\nTodos nuestros productos tienen 2 años de garantía legal. Si tienes algún problema, escríbenos y lo gestionamos.' },
+  { id:'T-0035', name:'Rubén Castro', email:'ruben.c@gmail.com', subject:'Reclamación — producto diferente al pedido', time:'5h 20min', channel:'email', tags:['urgent','email'], order:'#5770', orderDate:'5 abr 2025', orderAmount:'€73.00', orderStatus:'Entregado', orderItems:'Filtros papel x100', message:'Me habéis enviado filtros de tamaño 4 pero yo pedí el tamaño 2. Necesito que lo solucionéis urgente.', aiResponse:'Hola Rubén,\n\nDisculpa el error en el envío. Te enviamos los filtros correctos (tamaño 2) sin coste y puedes quedarte los que te llegaron.', aiAction:'Reenvío gratuito — order #5770', aiConfidence:79, status:'resolved', resolvedAt:'hoy 07:33', resolvedAction:'approved', finalResponse:'Hola Rubén,\n\nDisculpa el error en el envío. Te enviamos los filtros correctos (tamaño 2) sin coste y puedes quedarte los que te llegaron.' },
+  { id:'T-0034', name:'Isabel Fuentes', email:'isabelf@outlook.es', subject:'Solicitud fuera de plazo de devolución', time:'ayer', channel:'email', tags:['return','email'], order:'#5741', orderDate:'20 mar 2025', orderAmount:'€189.00', orderStatus:'Entregado', orderItems:'Grinder eléctrico x1', message:'Sé que han pasado los 30 días pero ¿podéis hacer una excepción para devolver el grinder? No me convence.', aiResponse:'Hola Isabel,\n\nLamentamos que el producto no haya cumplido tus expectativas. Al estar fuera del plazo de devolución de 30 días no podemos tramitarla, pero podemos ofrecerte un vale descuento del 15%.', aiAction:'Sin acción — fuera de política', aiConfidence:62, status:'rejected', resolvedAt:'ayer 16:10', resolvedAction:'rejected', finalResponse:null },
+  { id:'T-0033', name:'Tomás Vera', email:'tomas.vera@gmail.com', subject:'Doble cargo en tarjeta', time:'ayer', channel:'chat', tags:['refund','chat','urgent'], order:'#5738', orderDate:'19 mar 2025', orderAmount:'€45.00', orderStatus:'Entregado', orderItems:'Tamper 58mm x1', message:'Me han cobrado dos veces el mismo pedido. Os adjunto captura de pantalla de los dos cargos.', aiResponse:'Hola Tomás,\n\nVamos a investigarlo de inmediato con nuestro equipo de pagos. Te contactamos en menos de 24h.', aiAction:'Escalar a equipo de pagos — order #5738', aiConfidence:55, status:'rejected', resolvedAt:'ayer 14:22', resolvedAction:'rejected', finalResponse:null },
+];
+
+// ── STATE ─────────────────────────────────────────────────────
+let currentView = 'pending'; // pending | chat | resolved | rejected | all
+let tagFilter = 'all';       // for pending/chat views
+let cur = null;
+let editMode = false;
+
+// ── VIEW CONFIG ───────────────────────────────────────────────
+const viewConfig = {
+  pending:  { title:'Revisión pendiente',   filter: t => t.status==='pending' && !t.tags.includes('chat'), showActions:true  },
+  chat:     { title:'Chatbot escalados',    filter: t => t.status==='pending' && t.tags.includes('chat'),  showActions:true  },
+  resolved: { title:'Resueltos hoy',        filter: t => t.status==='resolved',                            showActions:false },
+  rejected: { title:'Rechazados',           filter: t => t.status==='rejected',                            showActions:false },
+  all:      { title:'Todos los tickets',    filter: t => true,                                             showActions:false },
+};
+
+// ── SWITCH VIEW ───────────────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  tagFilter = 'all';
+  cur = null;
+  editMode = false;
+
+  // Update sidebar active state
+  document.querySelectorAll('.s-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-'+view)?.classList.add('active');
+
+  // Show/hide filter row (only relevant for pending/all views)
+  const showFilters = view === 'pending' || view === 'all';
+  document.querySelector('.filter-row').style.display = showFilters ? 'flex' : 'none';
+
+  // Reset tag filters
+  document.querySelectorAll('.fc').forEach(c => c.classList.remove('active'));
+  document.querySelector('.fc').classList.add('active');
+
+  // Update list title
+  document.querySelector('.tl-title').textContent = viewConfig[view].title;
+
+  renderList();
+  clearDetail();
+}
+
+// ── RENDER LIST ───────────────────────────────────────────────
+function renderList() {
+  const el = document.getElementById('tlist');
+  el.innerHTML = '';
+
+  let items = store.filter(viewConfig[currentView].filter);
+
+  // Apply tag sub-filter only when filters are visible
+  if ((currentView === 'pending' || currentView === 'all') && tagFilter !== 'all') {
+    items = items.filter(t => t.tags.includes(tagFilter));
+  }
+
+  document.getElementById('list-count').textContent = `${items.length} ticket${items.length!==1?'s':''}`;
+
+  if (items.length === 0) {
+    el.innerHTML = `<div style="padding:32px 16px;text-align:center;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);">Sin tickets en esta vista</div>`;
+    return;
+  }
+
+  items.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 't-item' + (cur?.id===t.id?' active':'');
+    d.onclick = () => openTicket(t.id);
+
+    let statusPill = '';
+    if (t.status==='resolved') {
+      const label = t.resolvedAction==='edited' ? 'editado' : 'aprobado';
+      statusPill = `<span class="tag return">${label}</span>`;
+    } else if (t.status==='rejected') {
+      statusPill = `<span class="tag urgent">rechazado</span>`;
+    }
+
+    const timeLabel = t.status==='pending' ? `hace ${t.time}` : (t.resolvedAt || t.time);
+
+    d.innerHTML = `
+      <div class="t-top"><span class="t-name">${t.name}</span><span class="t-time">${timeLabel}</span></div>
+      <div class="t-subj">${t.subject}</div>
+      <div class="t-tags">
+        ${t.tags.map(g=>`<span class="tag ${g}">${g}</span>`).join('')}
+        ${statusPill}
+        <span class="t-id">${t.id}</span>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+
+// ── OPEN TICKET ───────────────────────────────────────────────
+function openTicket(id) {
+  cur = store.find(t=>t.id===id);
+  editMode = false;
+  renderList();
+  renderDetail();
+}
+
+// ── CLEAR DETAIL ──────────────────────────────────────────────
+function clearDetail() {
+  document.getElementById('detail').innerHTML = `<div class="empty"><div class="empty-title">${viewConfig[currentView].title}</div><div class="empty-sub">Selecciona un ticket para ver el detalle</div></div>`;
+}
+
+// ── FORMAT JSON ───────────────────────────────────────────────
+function fmtJson(o) {
+  return JSON.stringify(o,null,2)
+    .replace(/"([^"]+)":/g,'<span class="wh-k">"$1"</span>:')
+    .replace(/: "([^"]*)"([,\n\r])/g,': <span class="wh-s">"$1"</span>$2')
+    .replace(/: (\d+)([,\n\r}])/g,': <span class="wh-n">$1</span>$2');
+}
+
+// ── RENDER DETAIL ─────────────────────────────────────────────
+function renderDetail() {
+  const panel = document.getElementById('detail');
+  const t = cur;
+  if (!t) return;
+
+  const showActions = viewConfig[currentView].showActions && t.status === 'pending';
+  const cc = t.aiConfidence>=90?'#7ecb9e':t.aiConfidence>=75?'var(--tan-pale)':'var(--red)';
+  const pl = {ticket_id:t.id,action:'approve',final_response:t.aiResponse.split('\n')[0]+'...',order:t.order,customer_email:t.email,ai_action:t.aiAction};
+
+  // Status banner for non-pending tickets
+  let statusBanner = '';
+  if (t.status === 'resolved') {
+    const actionLabel = t.resolvedAction==='edited' ? 'Respuesta editada y enviada' : 'Aprobado y enviado';
+    statusBanner = `<div style="background:var(--green-dim);border-bottom:1px solid rgba(45,122,79,0.2);padding:10px 24px;display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--green);">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      ${actionLabel} · ${t.resolvedAt}
+    </div>`;
+  } else if (t.status === 'rejected') {
+    statusBanner = `<div style="background:var(--red-dim);border-bottom:1px solid rgba(192,57,43,0.15);padding:10px 24px;display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--red);">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Propuesta rechazada · ${t.resolvedAt}
+    </div>`;
+  }
+
+  // Final response block (for resolved/edited tickets)
+  let finalResponseBlock = '';
+  if (t.status === 'resolved' && t.finalResponse) {
+    finalResponseBlock = `<div>
+      <div class="s-label">Respuesta enviada al cliente</div>
+      <div class="msg-bubble" style="border-left-color:var(--green);">${t.finalResponse.replace(/\n/g,'<br>')}</div>
+    </div>`;
+  }
+
+  // Action buttons or read-only footer
+  let footer = '';
+  if (showActions) {
+    footer = `<div class="d-bar">
+      <button class="btn btn-ok" onclick="decide('approve')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Aprobar
+      </button>
+      <button class="btn btn-ed" id="btn-ed" onclick="toggleEdit()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>${editMode?'Enviar editado':'Editar'}
+      </button>
+      <button class="btn btn-no" onclick="decide('reject')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Rechazar
+      </button>
+      <button class="btn btn-sk" onclick="nextTicket()">siguiente →</button>
+    </div>`;
+  } else {
+    footer = `<div class="d-bar" style="justify-content:flex-end;">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);">ticket de solo lectura</span>
+      <button class="btn btn-sk" onclick="nextTicket()">siguiente →</button>
+    </div>`;
+  }
+
+  panel.innerHTML = `
+  ${statusBanner}
+  <div class="d-header">
+    <div class="d-customer">
+      <div class="d-name">${t.name}</div>
+      <div class="d-meta">
+        <span>${t.email}</span>
+        <span style="opacity:.3">·</span>
+        <span class="ch-badge ${t.channel==='chat'?'chat':''}">${t.channel==='chat'?'chatbot escalado':'email inbox'}</span>
+      </div>
+    </div>
+    <div class="order-card">
+      <span class="oc-id">${t.order}</span>
+      <span class="oc-amount">${t.orderAmount}</span>
+      <span class="oc-status">${t.orderStatus}</span>
+    </div>
+  </div>
+  <div class="d-body">
+    <div>
+      <div class="s-label">Mensaje del cliente</div>
+      <div class="msg-bubble">
+        <span class="msg-channel">${t.channel==='chat'?'chatbot':'email'}</span>
+        ${t.message.replace(/\n/g,'<br>')}
+      </div>
+    </div>
+    <div>
+      <div class="s-label">Contexto del pedido — Shopify</div>
+      <div class="order-ctx">
+        <div class="ctx-item"><span class="ctx-label">Artículo</span><span class="ctx-val">${t.orderItems}</span></div>
+        <div class="ctx-item"><span class="ctx-label">Estado</span><span class="ctx-val amber">${t.orderStatus}</span></div>
+        <div class="ctx-item"><span class="ctx-label">Fecha pedido</span><span class="ctx-val">${t.orderDate}</span></div>
+        <div class="ctx-item"><span class="ctx-label">Importe</span><span class="ctx-val tan">${t.orderAmount}</span></div>
+      </div>
+    </div>
+    ${finalResponseBlock}
+    <div>
+      <div class="s-label">Propuesta IA</div>
+      <div class="ai-block">
+        <div class="ai-head">
+          <div class="ai-orb">AI</div>
+          <span class="ai-lbl">respuesta sugerida</span>
+          <span class="ai-conf">confianza <span style="color:${cc}">${t.aiConfidence}%</span></span>
+        </div>
+        <div class="ai-text-area">
+          <textarea class="ai-textarea" id="ai-ta" ${(showActions && editMode)?'':'readonly'}>${t.aiResponse}</textarea>
+        </div>
+        <div class="ai-action">
+          <span class="ai-action-lbl">Acción n8n:</span>
+          <div class="a-pill"><div class="a-dot"></div>${t.aiAction}</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="s-label">Payload → POST /api/decision</div>
+      <div class="wh-block">
+        <div class="wh-head">
+          <span class="wh-head-title">n8n · /webhook/decision</span>
+          <button class="wh-copy" onclick="copyPl()">copiar JSON</button>
+        </div>
+        <div class="wh-code">${fmtJson(pl)}</div>
+      </div>
+    </div>
+  </div>
+  ${footer}`;
+}
+
+// ── TOGGLE EDIT ───────────────────────────────────────────────
+function toggleEdit() {
+  const ta = document.getElementById('ai-ta'), btn = document.getElementById('btn-ed');
+  if (!editMode) {
+    editMode = true; ta.removeAttribute('readonly'); ta.focus();
+    btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar editado`;
+  } else decide('edit');
+}
+
+// ── DECIDE ────────────────────────────────────────────────────
+async function decide(action) {
+  const finalResponse = document.getElementById('ai-ta')?.value || cur.aiResponse;
+  const pl = {ticket_id:cur.id,action,final_response:finalResponse,order:cur.order,customer_email:cur.email,ai_action:cur.aiAction};
+
+  if (!DEMO_MODE) {
+    try {
+      const r = await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pl)});
+      if (!r.ok) throw new Error(r.status);
+    } catch(e) { toast('Error enviando a n8n','red'); return; }
+  }
+
+  // Mutate store entry
+  const entry = store.find(t=>t.id===cur.id);
+  const now = new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  if (action === 'reject') {
+    entry.status = 'rejected';
+    entry.resolvedAction = 'rejected';
+    entry.resolvedAt = `hoy ${now}`;
+  } else {
+    entry.status = 'resolved';
+    entry.resolvedAction = action === 'edited' ? 'edited' : 'approved';
+    entry.resolvedAt = `hoy ${now}`;
+    entry.finalResponse = finalResponse;
+  }
+
+  const msgs = {
+    approve:{t:'Aprobado — n8n ejecutando acción',d:'green'},
+    edit:   {t:'Respuesta editada y enviada',d:'tan'},
+    reject: {t:'Rechazado — movido al historial',d:'red'}
+  };
+  toast(msgs[action].t, msgs[action].d);
+  editMode = false;
+
+  // Move to next pending ticket in current view
+  const pending = store.filter(viewConfig[currentView].filter);
+  const idx = pending.findIndex(t=>t.id===cur.id);
+  // After mutation cur's entry may no longer match the filter, pick next
+  const remaining = store.filter(viewConfig[currentView].filter);
+  cur = remaining.length > 0 ? remaining[Math.min(idx, remaining.length-1)] : null;
+
+  updateCounts();
+  renderList();
+  if (cur) renderDetail();
+  else clearDetail();
+}
+
+// ── NEXT TICKET ───────────────────────────────────────────────
+function nextTicket() {
+  const items = store.filter(viewConfig[currentView].filter);
+  if (!items.length) return;
+  const i = items.findIndex(t=>t.id===cur?.id);
+  openTicket(items[(i+1)%items.length].id);
+}
+
+// ── TAG FILTER ────────────────────────────────────────────────
+function filterT(type, btn) {
+  tagFilter = type;
+  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+// ── UPDATE COUNTS ─────────────────────────────────────────────
+function updateCounts() {
+  const pending = store.filter(t=>t.status==='pending' && !t.tags.includes('chat')).length;
+  const chat    = store.filter(t=>t.status==='pending' && t.tags.includes('chat')).length;
+  const resolved= store.filter(t=>t.status==='resolved').length;
+  const rejected= store.filter(t=>t.status==='rejected').length;
+
+  document.getElementById('top-badge').textContent   = `${pending} pendientes`;
+  document.getElementById('side-badge').textContent  = pending;
+  document.getElementById('badge-chat').textContent  = chat;
+  document.getElementById('badge-resolved').textContent = resolved;
+  document.getElementById('badge-rejected').textContent = rejected;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+function copyPl() {
+  if (!cur) return;
+  const pl = {ticket_id:cur.id,action:'approve',final_response:document.getElementById('ai-ta')?.value||cur.aiResponse,order:cur.order,customer_email:cur.email,ai_action:cur.aiAction};
+  navigator.clipboard?.writeText(JSON.stringify(pl,null,2));
+  toast('Payload copiado','tan');
+}
+
+function copyWh(el, url) {
+  navigator.clipboard?.writeText(url);
+  const orig = el.textContent; el.textContent = '✓ copiado';
+  setTimeout(()=>{ el.textContent = orig; }, 1400);
+}
+
+function toast(msg, dot) {
+  const el = document.getElementById('toast');
+  document.getElementById('tmsg').textContent = msg;
+  document.getElementById('tdot').className = `t-dot ${dot}`;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+async function loadFromN8n() {
+  if (DEMO_MODE) return;
+  try {
+    const r = await fetch('/api/tickets-pending');
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    store.length = 0; data.forEach(t=>store.push(t));
+    updateCounts(); renderList();
+    if (store.length) openTicket(store[0].id);
+  } catch(e) { toast('n8n no disponible — demo activo','tan'); }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+updateCounts();
+renderList();
+openTicket('T-0041');
+loadFromN8n();
+</script>
+</body>
+</html>

@@ -447,8 +447,13 @@ async function renderList() {
                     : t.status === 'closed'    ? '<span class="tag completed">closed</span>'
                     : t.status === 'rejected'  ? '<span class="tag urgent">rejected</span>'
                     : '';
-    const timeLabel = t.resolvedAt || t.closedAt || t.rejectedAt || t.ignoredAt || `hace ${t.time}`;
-    d.innerHTML = `<div class="t-top"><span class="t-name">${t.name}</span><span class="t-time">${timeLabel}</span></div><div class="t-subj">${t.subject}</div><div class="t-tags">${t.tags.map(g=>`<span class="tag ${g}">${g}</span>`).join('')}${statusTag}<span class="t-id">${t.id}</span></div>`;
+    const timeLabel = t.escalatedAt || t.closedAt || t.rejectedAt || '';
+    let preview = t.subject || '';
+    if (preview.startsWith('{')) { try { const p = JSON.parse(preview); preview = p?.output?.reply || p?.reply || preview; } catch(e){} }
+    if (preview.startsWith('Calling ')) preview = '';
+    if (preview === '__register__') preview = '';
+    preview = preview.replace(/\|\|/g,' ').replace(/\\n/g,' ').slice(0,60);
+    d.innerHTML = `<div class="t-top"><span class="t-name">${t.name}</span><span class="t-time">${timeLabel}</span></div><div class="t-subj">${preview || 'Nueva conversación'}</div><div class="t-tags">${t.tags.map(g=>`<span class="tag ${g}">${g}</span>`).join('')}${statusTag}</div>`;
     el.appendChild(d);
   });
 }
@@ -699,10 +704,9 @@ function renderChatDetail(panel, t) {
         <span class="ch-badge ${t.status==='escalated'?'escalated':'chat'}">${t.status==='escalated'?'escalado':'chatbot'}</span>
       </div>
     </div>
-    ${t.sessionId ? `<div class="order-card"><span class="oc-id" style="font-size:12px;letter-spacing:0.06em">Session</span><span class="oc-amount" style="font-size:11px;word-break:break-all">${t.sessionId}</span><span class="oc-status">${t.status}</span></div>` : ''}
+    ${t.sessionId ? `<div class="order-card">${t.customerName ? `<span class="oc-id" style="font-size:12px;letter-spacing:0.06em">Customer</span><span class="oc-amount" style="font-size:13px">${t.customerName}</span>` : ''}${t.customerEmail ? `<span class="oc-amount" style="font-size:11px;color:var(--muted2)">${t.customerEmail}</span>` : ''}${t.orderId ? `<span class="oc-id" style="font-size:12px;letter-spacing:0.06em;margin-top:6px">Order ${t.orderId}</span>${(t.orderProducts||[]).map(function(p){return '<span class="oc-amount" style="font-size:11px">'+p.quantity+'× '+p.title+' · £'+p.price+'</span>'}).join('')}` : ''}<span class="oc-status">${t.status}</span></div>` : ''}
   </div>
   <div class="d-body">
-    ${customerInfo}
     <div>
       <div class="s-label">Conversación</div>
       <div style="background:var(--off-white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;max-height:280px;overflow-y:auto">

@@ -420,6 +420,7 @@ async function renderList() {
                 : 'open',
           escalatedAt: s.escalated_at || null,
           closedAt: s.closed_at || null,
+          emailDraft: s.email_draft || null,
           messages: [],
         };
       });

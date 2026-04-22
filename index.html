@@ -620,15 +620,15 @@ function renderChatDetail(panel, t) {
 
   // Customer info panel
   let customerInfo = '';
-  if (t.customerName || t.customerEmail || t.orderId) {
+  if (t.customerName || t.customerEmail || t.orderId || true) {
     const products = (t.orderProducts || []).map(function(p) {
       return `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px"><span>${p.quantity}× ${p.title}</span><span style="color:var(--muted2)">£${p.price}</span></div>`;
     }).join('');
     customerInfo = `<div style="background:var(--sand-pale);border:1px solid var(--sand-dim);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:13px">
       <div style="font-weight:700;font-size:14px;margin-bottom:8px;color:var(--ink)">Customer info</div>
-      ${t.customerName ? `<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Name</span><span style="color:var(--ink)">${t.customerName}</span></div>` : ''}
-      ${t.customerEmail ? `<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Email</span><span style="color:var(--ink)">${t.customerEmail}</span></div>` : ''}
-      ${t.orderId ? `<div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Order</span><span style="color:var(--ink)">${t.orderId}</span></div>` : ''}
+      <div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Name</span><span style="color:var(--ink)">${t.customerName || '#Unknown'}</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Email</span><span style="color:var(--ink)">${t.customerEmail || '#Unknown'}</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:4px"><span style="color:var(--muted2);min-width:50px">Order</span><span style="color:var(--ink)">${t.orderId || '#Unknown'}</span></div>
       ${products ? `<div style="margin-top:6px;border-top:1px solid var(--sand-dim);padding-top:6px">${products}</div>` : ''}
     </div>`;
   }
@@ -705,7 +705,7 @@ function renderChatDetail(panel, t) {
         <span class="ch-badge ${t.status==='escalated'?'escalated':'chat'}">${t.status==='escalated'?'escalado':'chatbot'}</span>
       </div>
     </div>
-    ${t.sessionId ? `<div class="order-card">${t.customerName ? `<span class="oc-id" style="font-size:12px;letter-spacing:0.06em">Customer</span><span class="oc-amount" style="font-size:13px">${t.customerName}</span>` : ''}${t.customerEmail ? `<span class="oc-amount" style="font-size:11px;color:var(--muted2)">${t.customerEmail}</span>` : ''}${t.orderId ? `<span class="oc-id" style="font-size:12px;letter-spacing:0.06em;margin-top:6px">Order ${t.orderId}</span>${(t.orderProducts||[]).map(function(p){return '<span class="oc-amount" style="font-size:11px">'+p.quantity+'× '+p.title+' · £'+p.price+'</span>'}).join('')}` : ''}<span class="oc-status">${t.status}</span></div>` : ''}
+    ${t.sessionId ? `<div class="order-card"><span class="oc-id" style="font-size:12px;letter-spacing:0.06em">Customer</span><span class="oc-amount" style="font-size:13px">${t.customerName || '#Unknown'}</span><span class="oc-amount" style="font-size:11px;color:var(--muted2)">${t.customerEmail || '#Unknown'}</span><span class="oc-id" style="font-size:12px;letter-spacing:0.06em;margin-top:6px">Order ${t.orderId || '#Unknown'}</span>${(t.orderProducts||[]).map(function(p){return '<span class="oc-amount" style="font-size:11px">'+p.quantity+'× '+p.title+' · £'+p.price+'</span>'}).join('')}<span class="oc-status">${t.status}</span></div>` : ''}
   </div>
   <div class="d-body">
     <div>
